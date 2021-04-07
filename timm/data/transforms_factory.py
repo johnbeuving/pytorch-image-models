@@ -150,6 +150,8 @@ def transforms_imagenet_eval(
         transforms.Resize(scale_size, _pil_interp(interpolation)),
         transforms.CenterCrop(img_size),
     ]
+    color_jitter = (float(0.4),) * 3
+    tfl += [transforms.ColorJitter(*color_jitter)]
     tfl += [transforms.RandomHorizontalFlip(p=0.5)]
     if use_prefetcher:
         # prefetcher and collate will handle tensor conversion and norm

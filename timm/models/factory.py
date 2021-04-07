@@ -81,6 +81,6 @@ def create_model(
         model = create_fn(pretrained=pretrained, **kwargs)
 
     if checkpoint_path:
-        load_checkpoint(model, checkpoint_path)
+        load_checkpoint(model, checkpoint_path, True)
 
     return model

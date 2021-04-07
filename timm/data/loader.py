@@ -12,6 +12,7 @@ import numpy as np
 from .transforms_factory import create_transform
 from .constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD
 from .distributed_sampler import OrderedDistributedSampler
+from .imbalanced import ImbalancedDatasetSampler
 from .random_erasing import RandomErasing
 from .mixup import FastCollateMixup
 
@@ -191,6 +192,10 @@ def create_loader(
             # This will add extra duplicate entries to result in equal num
             # of samples per-process, will slightly alter validation results
             sampler = OrderedDistributedSampler(dataset)
+    else:
+        if is_training:
+            print("IMBALANCEDDATASETSAMPLER")
+            sampler = ImbalancedDatasetSampler(dataset)
 
     if collate_fn is None:
         collate_fn = fast_collate if use_prefetcher else torch.utils.data.dataloader.default_collate

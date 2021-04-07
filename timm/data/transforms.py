@@ -6,9 +6,21 @@ import math
 import random
 import numpy as np
 
+import cv2
+
+class CLAHE:
+    def __init__(self):
+        self.clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))
+
+    def __call__(self, img):
+        lab = cv2.cvtColor(np.array(img), cv2.COLOR_RGB2LAB)
+        lab_planes = cv2.split(lab)
+        lab_planes[0] = self.clahe.apply(lab_planes[0])
+        lab = cv2.merge(lab_planes)
+        res= Image.fromarray(cv2.cvtColor(lab, cv2.COLOR_LAB2RGB))
+        return res
 
 class ToNumpy:
-
     def __call__(self, pil_img):
         np_img = np.array(pil_img, dtype=np.uint8)
         if np_img.ndim < 3:
@@ -18,7 +30,6 @@ class ToNumpy:
 
 
 class ToTensor:
-
     def __init__(self, dtype=torch.float32):
         self.dtype = dtype
 

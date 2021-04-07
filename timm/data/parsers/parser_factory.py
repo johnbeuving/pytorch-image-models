@@ -3,6 +3,7 @@ import os
 from .parser_image_folder import ParserImageFolder
 from .parser_image_tar import ParserImageTar
 from .parser_image_in_tar import ParserImageInTar
+from .parser_csv import ParserImageCSV
 
 
 def create_parser(name, root, split='train', **kwargs):
@@ -13,9 +14,12 @@ def create_parser(name, root, split='train', **kwargs):
         prefix = name[0]
     name = name[-1]
 
+    print("name=",name,"root=",root,"split=",split)
     # FIXME improve the selection right now just tfds prefix or fallback path, will need options to
     # explicitly select other options shortly
-    if prefix == 'tfds':
+    if split.endswith(".csv"):
+        parser = ParserImageCSV("skip", name, split=split, **kwargs)
+    elif prefix == 'tfds':
         from .parser_tfds import ParserTfds  # defer tensorflow import
         parser = ParserTfds(root, name, split=split, shuffle=kwargs.pop('shuffle', False), **kwargs)
     else:

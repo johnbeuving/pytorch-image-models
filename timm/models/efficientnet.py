@@ -829,16 +829,11 @@ def _gen_efficientnet_v2s(variant, channel_multiplier=1.0, depth_multiplier=1.0,
     and weights
 
     Ref impl:
-    Paper: `EfficientNetV2: Smaller Models and Faster Training` - https://arxiv.org/abs/2104.00298
+    Paper: https://arxiv.org/abs/2104.00298
     """
 
     arch_def = [
-        # FIXME it's not clear if the FusedMBConv layers have SE enabled for the Small variant,
-        # Table 4 suggests no. 23.94M params w/o, 23.98 with which is closer to 24M.
-        # ['er_r2_k3_s1_e1_c24_se0.25'],
-        # ['er_r4_k3_s2_e4_c48_se0.25'],
-        # ['er_r4_k3_s2_e4_c64_se0.25'],
-        ['er_r2_k3_s1_e1_c24'],
+        ['er_r2_k3_s1_e1_c24_noskip'],
         ['er_r4_k3_s2_e4_c48'],
         ['er_r4_k3_s2_e4_c64'],
         ['ir_r6_k3_s2_e4_c128_se0.25'],
@@ -851,7 +846,7 @@ def _gen_efficientnet_v2s(variant, channel_multiplier=1.0, depth_multiplier=1.0,
         stem_size=24,
         channel_multiplier=channel_multiplier,
         norm_kwargs=resolve_bn_args(kwargs),
-        act_layer=resolve_act_layer(kwargs, 'silu'),  # FIXME this is an assumption, paper does not mention
+        act_layer=resolve_act_layer(kwargs, 'silu'),
         **kwargs,
     )
     model = _create_effnet(variant, pretrained, **model_kwargs)

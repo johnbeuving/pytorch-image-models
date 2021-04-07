@@ -10,7 +10,7 @@ from torchvision import transforms
 
 from timm.data.constants import IMAGENET_DEFAULT_MEAN, IMAGENET_DEFAULT_STD, DEFAULT_CROP_PCT
 from timm.data.auto_augment import rand_augment_transform, augment_and_mix_transform, auto_augment_transform
-from timm.data.transforms import _pil_interp, RandomResizedCropAndInterpolation, ToNumpy, ToTensor
+from timm.data.transforms import _pil_interp, RandomResizedCropAndInterpolation, ToNumpy, ToTensor, CLAHE
 from timm.data.random_erasing import RandomErasing
 
 
@@ -75,7 +75,7 @@ def transforms_imagenet_train(
     if vflip > 0.:
         primary_tfl += [transforms.RandomVerticalFlip(p=vflip)]
 
-    secondary_tfl = []
+    secondary_tfl = [ CLAHE() ]
     if auto_augment:
         assert isinstance(auto_augment, str)
         if isinstance(img_size, (tuple, list)):

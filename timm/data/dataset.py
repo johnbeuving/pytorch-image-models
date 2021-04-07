@@ -22,13 +22,14 @@ class ImageDataset(data.Dataset):
     def __init__(
             self,
             root,
+            split,
             parser=None,
             class_map='',
             load_bytes=False,
             transform=None,
     ):
         if parser is None or isinstance(parser, str):
-            parser = create_parser(parser or '', root=root, class_map=class_map)
+            parser = create_parser(parser or '', root=root, split=split, class_map=class_map)
         self.parser = parser
         self.load_bytes = load_bytes
         self.transform = transform
@@ -51,6 +52,12 @@ class ImageDataset(data.Dataset):
         if target is None:
             target = torch.tensor(-1, dtype=torch.long)
         return img, target
+
+    def label(self, index):
+        img, target = self.parser[index]
+        if target is None:
+            target = torch.tensor(-1, dtype=torch.long)
+        return target
 
     def __len__(self):
         return len(self.parser)

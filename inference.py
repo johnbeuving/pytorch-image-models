@@ -83,7 +83,7 @@ def main():
         model = model.cuda()
 
     loader = create_loader(
-        ImageDataset(args.data),
+        ImageDataset(args.data, "valid_split_box.csv"),
         input_size=config['input_size'],
         batch_size=args.batch_size,
         use_prefetcher=True,

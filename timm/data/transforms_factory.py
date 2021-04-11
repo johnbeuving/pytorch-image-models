@@ -136,6 +136,9 @@ def transforms_imagenet_eval(
         std=IMAGENET_DEFAULT_STD):
     crop_pct = crop_pct or DEFAULT_CROP_PCT
 
+    scale = tuple((0.08, 1.0))  # default imagenet scale range
+    ratio = tuple((3./4., 4./3.))  # default imagenet ratio range
+
     if isinstance(img_size, (tuple, list)):
         assert len(img_size) == 2
         if img_size[-1] == img_size[-2]:
@@ -149,6 +152,7 @@ def transforms_imagenet_eval(
     tfl = [
         transforms.Resize(scale_size, _pil_interp(interpolation)),
         transforms.CenterCrop(img_size),
+        RandomResizedCropAndInterpolation(img_size, scale=scale, ratio=ratio, interpolation=interpolation),
     ]
     color_jitter = (float(0.4),) * 3
     tfl += [transforms.ColorJitter(*color_jitter)]

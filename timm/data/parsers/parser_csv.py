@@ -19,7 +19,8 @@ def load_classmap(filename="classmap.csv"):
     df_cats = pd.read_csv(filename)
     class_to_idx = {}
     for idx, row in df_cats.iterrows():
-        class_to_idx[str(row["category_id"])] = int(row["id"])
+        cat_id = row["category_id"]
+        class_to_idx[str(cat_id)] = int(row["id"])
     return class_to_idx
 
 def find_images_and_targets(folder, types=IMG_EXTENSIONS, class_to_idx=None, leaf_name_only=True, sort=True):
@@ -27,8 +28,9 @@ def find_images_and_targets(folder, types=IMG_EXTENSIONS, class_to_idx=None, lea
     filenames = []
     df = pd.read_csv(folder)
     for idx, row in df.iterrows():
-        filenames.append("train/" + row["image_id"] + ".jpg")
-        labels.append(str(row["category_id"]))
+        filenames.append("test_bbox256x256/" + row["image_id"] + ".jpg")
+        cat_id = row["category_id"]
+        labels.append(str(cat_id))
 
     if class_to_idx is None:
         class_to_idx = load_classmap()

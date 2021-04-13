@@ -12,6 +12,7 @@ import logging
 import numpy as np
 import torch
 import datetime
+np.set_printoptions(suppress=True)
 
 from timm.models import create_model, apply_test_time_pool
 from timm.data import ImageDataset, create_loader, resolve_data_config
@@ -100,12 +101,18 @@ def main():
     batch_time = AverageMeter()
     end = time.time()
     topk_ids = []
+    topk_confs = []
+    sm = torch.nn.Softmax()
     with torch.no_grad():
         for batch_idx, (input, _) in enumerate(loader):
             input = input.cuda()
             labels = model(input)
             topk = labels.topk(k)[1]
             topk_ids.append(topk.cpu().numpy())
+
+            probabilities = sm(labels) 
+            topkc = probabilities.topk(k)[0]
+            topk_confs.append(topkc.cpu().numpy())
 
             # measure elapsed time
             batch_time.update(time.time() - end)
@@ -116,13 +123,15 @@ def main():
                     batch_idx, len(loader), batch_time=batch_time))
 
     topk_ids = np.concatenate(topk_ids, axis=0).squeeze()
+    topk_confs = np.concatenate(topk_confs, axis=0).squeeze()
 
     filename = "topk_ids" + str(datetime.datetime.now().timestamp()) + ".csv"
     with open(os.path.join(args.output_dir, filename), 'w') as out_file:
         filenames = loader.dataset.filenames(basename=True)
-        for filename, label in zip(filenames, topk_ids):
-            out_file.write('{0},{1},{2},{3},{4},{5}\n'.format(
-                filename, label[0], label[1], label[2], label[3], label[4]))
+        for filename, label, conf in zip(filenames, topk_ids, topk_confs):
+            out_file.write('{0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10}\n'.format(
+                filename, label[0], conf[0], label[1], conf[1], label[2], conf[2],
+                label[3], conf[3], label[4], conf[4]))
 
 
 if __name__ == '__main__':

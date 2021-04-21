@@ -28,8 +28,10 @@ def find_images_and_targets(folder, types=IMG_EXTENSIONS, class_to_idx=None, lea
     filenames = []
     df = pd.read_csv(folder)
     for idx, row in df.iterrows():
-        filenames.append("test_bbox256x256/" + row["image_id"] + ".jpg")
-        cat_id = row["category_id"]
+        filenames.append(row["filename"])
+        cat_id = 0
+        if "category_id" in row:
+            cat_id = row["category_id"]
         labels.append(str(cat_id))
 
     if class_to_idx is None:
